@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluent-bit
+  namespace: fluent-bit
+  labels:
+    k8s-app: fluent-bit-logging
+    version: v1
+    kubernetes.io/cluster-service: "true"
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s-app: fluent-bit-logging
+        version: v1
+        kubernetes.io/cluster-service: "true"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "2020"
+        prometheus.io/path: /api/v1/metrics/prometheus
+    spec:
+      containers:
+      - name: fluent-bit
+        image: registry.tkg.vmware.run/fluent-bit:v1.5.3_vmware.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 2020
+        readinessProbe:
+          httpGet:
+            path: /api/v1/metrics/prometheus
+            port: 2020
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 2020
+        resources:
+          requests:
+            cpu: 5m
+            memory: 10Mi
+          limits:
+            cpu: 50m
+            memory: 60Mi
+        volumeMounts:
+        - name: var-log
+          mountPath: /var/log
+        - name: var-lib-docker-containers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: fluent-bit-config
+          mountPath: /fluent-bit/etc/
+        - name: systemd-log
+          mountPath: /run/log
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: var-log
+        hostPath:
+          path: /var/log
+      - name: var-lib-docker-containers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: systemd-log
+        hostPath:
+          path: /run/log
+      - name: fluent-bit-config
+        configMap:
+          name: fluent-bit-config
+      serviceAccountName: fluent-bit
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - operator: Exists
+        effect: NoExecute
+      - operator: Exists
+        effect: NoSchedule
+  selector:
+    matchLabels:
+      k8s-app: fluent-bit-logging
+      version: v1
+      kubernetes.io/cluster-service: "true"
