@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: registry.tkg.vmware.run/fluent-bit:v1.5.3_vmware.1
+        image: fluent/fluent-bit:1.6.9
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 2020
