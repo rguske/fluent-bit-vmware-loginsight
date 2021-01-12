@@ -85,7 +85,7 @@ data:
     [OUTPUT]
         Name                 syslog
         Match                *
-        Host                 10.10.13.5
+        Host                 vrli.jarvis.lab
         Port                 514
         Mode                 tcp
         Syslog_Format        rfc5424
