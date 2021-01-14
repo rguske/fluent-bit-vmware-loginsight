@@ -13,6 +13,10 @@ Corresponding Blog Post: https://rguske.github.io/post/leveraging-fluent-bit-on-
 - `2-tkg-fluent-bit-configmap-cri.yaml`
 - `3-tkg-fluent-bit-ds.yaml`
 
+#### Containerd as Runtime - CRI Parser used!
+
+As mentioned at the beginning, I'm using a TKG cluster for my example respectively in my environment. VMware is using Containerd as it's container runtime and therefore I had to adjust my configuration accordingly. If you are using Docker as your runtime on Kubernetes, use the file `4-tkg-fluent-bit-configmap-docker.
+
 ### Fluent Bit Configmap
 
 The first adjustment you have to make is the replacement of your TKG clustername as well as the hostname of your vRealize Log Insight appliance.
